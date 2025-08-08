@@ -17,13 +17,13 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
     @PostMapping("/token")
-    public String receiveToken(@RequestBody TokenRequest request) {
+    public String receiveToken(@RequestBody TokenRequestFromFrontend request) {
         System.out.println("Email: " + request.getEmail());
-        System.out.println("Token: " + request.getToken());
+        System.out.println("Token: " + request.getHttpv1token());
         return "Token received successfully";
     }
     @PostMapping("/add")
-    public ResponseEntity<?> addUser(@RequestBody User user) {
+    public ResponseEntity<?> addUser(@RequestBody UserDb user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             return ResponseEntity.badRequest().body("Email is required");
         }
@@ -33,31 +33,30 @@ public class UserController {
             return ResponseEntity.badRequest().body("User already exists");
         }
 
-        User savedUser = userRepository.save(user);
+        UserDb savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser);
     }
     @PostMapping("/save-token")
-    public ResponseEntity<String> saveToken(@RequestBody TokenRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+    public ResponseEntity<String> saveToken(@RequestBody TokenRequestFromFrontend request) {
+        Optional<UserDb> optionalUser = userRepository.findByEmail(request.getEmail());
         if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setFcmToken(request.getToken());
+            UserDb user = optionalUser.get();
+            user.setFcmToken(request.getHttpv1token());
             userRepository.save(user);
             return ResponseEntity.ok("Token saved successfully");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
-    @PostMapping("/api/user/update-token")
+    @PostMapping("/update-token")
     public ResponseEntity<String> updateFcmToken(@RequestBody TokenUpdateRequest request) {
-        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
+        Optional<UserDb> userOpt = userRepository.findByEmail(request.getEmail());
         if (userOpt.isEmpty()) return ResponseEntity.notFound().build();
 
-        User user = userOpt.get();
-        user.setFcmToken(request.getFcmToken());
+        UserDb user = userOpt.get();
+        user.setFcmToken(request.getHttpv1Token());
         userRepository.save(user);
         return ResponseEntity.ok("Token updated");
     }
-
 }
 

@@ -8,5 +8,5 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByStatusAndDueDateBetween(String status, Instant from, Instant to);
 
-    // for connecting to repository and for handling the expections
+    // for connecting to repository and for handling the exceptions
 }

@@ -10,17 +10,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Configuration
-public class FirebaseConfiguration {
+public class FirebaseConfigurationFromGoogle {
     @PostConstruct
     public void initialize() {
         try {
             InputStream serviceAccount = getClass().getResourceAsStream("/firebase-service-account.json");
 
-            FirebaseOptions options = FirebaseOptions.builder()
+            FirebaseOptions firebaseOptions = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
             if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options);
+                FirebaseApp.initializeApp(firebaseOptions);
             }
         } catch (IOException e) {
             e.printStackTrace();
